@@ -95,7 +95,7 @@ function BuildingCard({ building: b, ctx }: { building: Building; ctx: GameConte
       </div>
 
       {b.kind === "agence" && (
-        <button onClick={() => ctx.goToTab("home")} className="mt-3 w-full rounded-xl bg-indigo py-2.5 text-sm font-bold text-white">
+        <button onClick={() => ctx.open("home")} className="mt-3 w-full rounded-xl bg-indigo py-2.5 text-sm font-bold text-white">
           🔑 Voir les annonces ({catalog.homes.length} logements)
         </button>
       )}

@@ -1,9 +1,9 @@
 // Textes de l'interface (français). Point d'entrée unique pour la future traduction (P6).
 export const fr = {
   app: {
-    name: "WA Life",
-    codename: "PROJECT WA LIFE",
-    tagline: "Ta nouvelle vie commence à Cotonou.",
+    name: "West Africa Life",
+    short: "WA Life",
+    tagline: "Construis ta vie en Afrique de l'Ouest.",
   },
   auth: {
     signIn: "Se connecter",
@@ -15,7 +15,7 @@ export const fr = {
     checkEmail: "Compte créé : ouvrez le lien reçu par e-mail pour l'activer, puis connectez-vous.",
   },
   game: {
-    tabs: { here: "Ici", map: "Carte", work: "Travail", home: "Logement", me: "Moi" },
+    tabs: { here: "Ici", map: "Carte", phone: "Téléphone", me: "Moi" },
     busy: "En cours",
     closed: "Fermé",
     open: "Ouvert",

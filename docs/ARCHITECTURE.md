@@ -1,4 +1,4 @@
-# PROJECT WA LIFE — Architecture technique (étape 1)
+# WEST AFRICA LIFE — Architecture technique (étape 1)
 
 Document de référence du projet. Il traduit le cahier des charges v1.0 en
 choix techniques, en modèle de données et en règles de jeu chiffrées.

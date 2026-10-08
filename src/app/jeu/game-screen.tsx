@@ -15,10 +15,14 @@ import { HomeTab } from "./home-tab";
 import { MapTab } from "./map-tab";
 import { MeTab } from "./me-tab";
 import { NeedsPanel } from "./needs-panel";
+import { APPS, type AppId, PhoneHome } from "./phone";
 import { WorkTab } from "./work-tab";
 
 export type Tab = keyof typeof fr.game.tabs;
-const TAB_ICONS: Record<Tab, string> = { here: "📍", map: "🗺️", work: "💼", home: "🏠", me: "🙂" };
+/** Écran affiché : un onglet du bas ou une application du téléphone. */
+export type View = Exclude<Tab, "phone"> | AppId | "phone";
+const TAB_ICONS: Record<Tab, string> = { here: "📍", map: "🗺️", phone: "📱", me: "🙂" };
+const isApp = (v: View): v is AppId => APPS.some((a) => a.id === v);
 
 export interface GameContext {
   state: GameState;
@@ -31,7 +35,8 @@ export interface GameContext {
   pending: boolean;
   run: (action: () => Promise<ActionResult>, success?: string) => void;
   goToMap: (district: string) => void;
-  goToTab: (tab: Tab) => void;
+  /** Ouvre un onglet ou une application du téléphone. */
+  open: (view: View) => void;
 }
 
 /** Instant serveur estimé, rafraîchi chaque seconde. */
@@ -57,7 +62,8 @@ export function GameScreen({
   notifications: GameNotification[];
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("here");
+  const [view, setView] = useState<View>("here");
+  const tab: Tab = isApp(view) ? "phone" : view;
   const [mapFocus, setMapFocus] = useState<string | null>(null);
   const [toast, setToast] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
@@ -109,10 +115,11 @@ export function GameScreen({
       }),
     goToMap: (code) => {
       setMapFocus(code);
-      setTab("map");
+      setView("map");
     },
-    goToTab: setTab,
+    open: setView,
   };
+  const app = isApp(view) ? APPS.find((a) => a.id === view) : undefined;
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col pb-24">
@@ -132,7 +139,7 @@ export function GameScreen({
           </div>
           {state.unread_notifications > 0 && (
             <button
-              onClick={() => setTab("me")}
+              onClick={() => setView("me")}
               className="relative rounded-full bg-papyrus p-2 ring-1 ring-encre/10"
               aria-label={`${state.unread_notifications} notification(s) non lue(s)`}
             >
@@ -158,11 +165,17 @@ export function GameScreen({
       <main className="flex-1 space-y-4 px-4 pt-4">
         <NeedsPanel needs={c.needs} />
         {activity && <BusyCard activity={activity} now={now} />}
-        {tab === "here" && <HereTab ctx={ctx} />}
-        {tab === "map" && <MapTab ctx={ctx} focus={mapFocus} onFocus={setMapFocus} />}
-        {tab === "work" && <WorkTab ctx={ctx} />}
-        {tab === "home" && <HomeTab ctx={ctx} />}
-        {tab === "me" && <MeTab ctx={ctx} ledger={ledger} notifications={notifications} />}
+        {app && (
+          <button onClick={() => setView("phone")} className="flex items-center gap-2 text-sm font-semibold text-indigo">
+            ← Téléphone <span className="text-encre">· {app.icon} {app.name}</span>
+          </button>
+        )}
+        {view === "here" && <HereTab ctx={ctx} />}
+        {view === "map" && <MapTab ctx={ctx} focus={mapFocus} onFocus={setMapFocus} />}
+        {view === "phone" && <PhoneHome ctx={ctx} />}
+        {view === "work" && <WorkTab ctx={ctx} />}
+        {view === "home" && <HomeTab ctx={ctx} />}
+        {view === "me" && <MeTab ctx={ctx} ledger={ledger} notifications={notifications} />}
       </main>
 
       {toast && (
@@ -175,11 +188,11 @@ export function GameScreen({
       )}
 
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-encre/10 bg-papyrus/95 backdrop-blur" aria-label="Navigation du jeu">
-        <div className="mx-auto grid max-w-2xl grid-cols-5">
+        <div className="mx-auto grid max-w-2xl grid-cols-4">
           {(Object.keys(fr.game.tabs) as Tab[]).map((t) => (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => setView(t)}
               aria-current={tab === t ? "page" : undefined}
               className={`flex flex-col items-center gap-0.5 py-2.5 text-xs font-semibold ${tab === t ? "text-terre" : "text-brume"}`}
             >

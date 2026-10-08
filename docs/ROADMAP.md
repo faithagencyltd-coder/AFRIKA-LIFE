@@ -1,4 +1,4 @@
-# PROJECT WA LIFE — Feuille de route
+# WEST AFRICA LIFE — Feuille de route
 
 Suivi des 17 étapes du cahier des charges (§56). Une étape est « faite »
 quand son code, ses tests et sa documentation sont fusionnés et que

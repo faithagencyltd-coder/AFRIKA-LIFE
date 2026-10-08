@@ -36,6 +36,11 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
 const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: "fr-FR" });
 const shot = (name) => page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true });
 const tab = (name) => page.getByRole("navigation").getByRole("button", { name });
+/** Ouvre une application du téléphone. */
+const openApp = async (name) => {
+  await tab("Téléphone").click();
+  await page.getByRole("button", { name, exact: true }).click();
+};
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 
@@ -128,7 +133,9 @@ try {
   await finishActivity();
   await page.reload();
 
-  await tab("Travail").click();
+  await tab("Téléphone").click();
+  await shot("12-telephone");
+  await openApp("Emplois");
   await shot("12-travail");
   await tab("Moi").click();
   await page.getByText("Salaire").first().waitFor();

@@ -1,9 +1,9 @@
-# PROJECT WA LIFE
+# WEST AFRICA LIFE
 
 Jeu de simulation de vie en Afrique de l'Ouest : web, mobile-first, multijoueur à terme.
 Lancement à **Cotonou** 🇧🇯, puis Lomé 🇹🇬 et Abidjan 🇨🇮.
 
-> Nom de code de développement. Le nom de marque sera choisi avant le lancement.
+> Nom provisoire (CdC V2). Ancien nom de code : PROJECT WA LIFE.
 
 ## Ce qui est jouable aujourd'hui (étapes 1 à 7 et 9)
 

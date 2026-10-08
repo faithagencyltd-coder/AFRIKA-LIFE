@@ -27,7 +27,7 @@ const KIND: Record<string, string> = {
   home_sale: "Vente de logement",
 };
 
-const NOTE_ICON: Record<string, string> = { rent_paid: "🧾", rent_missed: "⚠️", eviction: "🚪", home: "🏠" };
+const NOTE_ICON: Record<string, string> = { rent_paid: "🧾", rent_missed: "⚠️", eviction: "🚪", home: "🏠", mission: "🎯" };
 
 export function MeTab({ ctx, ledger, notifications }: { ctx: GameContext; ledger: LedgerEntry[]; notifications: GameNotification[] }) {
   const c = ctx.state.character;

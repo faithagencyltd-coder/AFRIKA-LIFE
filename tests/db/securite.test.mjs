@@ -7,8 +7,8 @@ import { newPlayer, pool, rejects, tx } from "./helpers.mjs";
 after(() => pool.end());
 
 const PUBLIC_RPC = [
-  "apply_for_job", "building_is_open", "buy_home", "buy_item", "change_look", "create_character", "game_minute", "game_state", "job_level", "job_pay",
-  "leave_home", "mark_notifications_read", "need_keys", "pay_home_arrears", "player_level", "quit_job", "real_duration",
+  "apply_for_job", "building_is_open", "buy_home", "buy_item", "change_look", "choose_goal", "claim_mission", "create_character", "drop_goal", "game_minute", "game_state", "job_level", "job_pay",
+  "leave_home", "mark_notifications_read", "need_keys", "outing_codes", "pay_home_arrears", "player_level", "quit_job", "real_duration",
   "rent_home", "rent_period", "start_activity", "start_home_activity", "start_work", "travel_quotes", "travel_to", "use_item",
 ];
 
@@ -30,6 +30,8 @@ describe("Sécurité", () => {
         "delete from notifications",
         "insert into inventory (character_id, item_code, quantity) values ('" + p.characterId + "', 'smartphone', 1)",
         "update shop_items set price = 1",
+        "insert into character_missions (character_id, mission_code) values ('" + p.characterId + "', 'proprietaire')",
+        "update missions set reward_cash = 99999999",
       ]) {
         assert.match(await rejects(t.q(sql)), /permission denied/, sql);
       }

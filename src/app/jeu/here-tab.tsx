@@ -8,6 +8,7 @@ import { EffectChips } from "./effect-chips";
 import type { GameContext } from "./game-screen";
 import { HomeActivities, Stars } from "./home-tab";
 import { itemNames, owned } from "./inventory-apps";
+import { MissionBanner } from "./missions-app";
 
 const BUILDING_ICON: Record<string, string> = {
   marche: "🛒",
@@ -36,6 +37,7 @@ export function HereTab({ ctx }: { ctx: GameContext }) {
 
   return (
     <div className="space-y-4">
+      <MissionBanner ctx={ctx} />
       <section>
         <h1 className="text-2xl font-black">{district?.name}</h1>
         <p className="text-sm text-brume">{district?.description}</p>

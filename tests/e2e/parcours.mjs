@@ -110,6 +110,11 @@ try {
   await page.getByRole("button", { name: /Basin brodé/ }).click();
   await page.locator('button[aria-pressed="true"]', { hasText: "Basin brodé" }).waitFor();
   await shot("06c-garde-robe");
+  // Mission 1 accomplie en mangeant : récompense réclamée
+  await openApp("Missions");
+  await page.getByRole("button", { name: /Réclamer la récompense/ }).click();
+  await page.getByText("Trouve un travail").first().waitFor();
+  await shot("06d-missions");
   await tab("Ici").click();
 
   // Embauche puis service
@@ -122,7 +127,7 @@ try {
   await finishActivity();
   await page.reload();
   await page.locator("section[aria-live]").waitFor({ state: "detached" });
-  assert.equal(await cash(), 502400 - 42300, "500 000 − 600 (zém) − 42 300 (marché) + 3 000 (salaire)");
+  assert.equal(await cash(), 502400 - 42300 + 2000, "500 000 − 600 (zém) − 42 300 (marché) + 2 000 (mission) + 3 000 (salaire)");
 
   // Logement : zémidjan jusqu'à l'agence (Ganhi), location d'une chambre à Agla, retour, nuit chez soi.
   await tab("Carte").click();

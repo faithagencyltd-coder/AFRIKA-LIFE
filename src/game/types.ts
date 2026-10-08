@@ -91,6 +91,25 @@ export interface GameState {
   home: HomeState | null;
   unread_notifications: number;
   inventory: InventoryEntry[];
+  missions: { code: string; progress: number; status: "locked" | "active" | "ready" | "claimed" }[];
+  goals: { code: string; progress: number }[];
+}
+
+export interface Mission {
+  code: string;
+  title: string;
+  description: string;
+  icon: string;
+  target: number;
+  reward_cash: number;
+  reward_xp: number;
+}
+export interface Goal {
+  code: string;
+  title: string;
+  icon: string;
+  objective_type: string;
+  target: number;
 }
 
 export interface InventoryEntry {
@@ -244,6 +263,8 @@ export interface Catalog {
   homeActivities: HomeActivity[];
   items: Item[];
   shopItems: ShopItem[];
+  missions: Mission[];
+  goals: Goal[];
 }
 
 /** Résultat d'une Server Action. */

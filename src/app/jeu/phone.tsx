@@ -1,7 +1,7 @@
 // Téléphone du personnage : point d'entrée de tous les modules (docs/ANALYSE-V2.md §5.2).
 import type { GameContext } from "./game-screen";
 
-export type AppId = "work" | "home" | "bag" | "wardrobe" | "bank" | "social" | "market" | "school" | "garage" | "business";
+export type AppId = "missions" | "work" | "home" | "bag" | "wardrobe" | "bank" | "social" | "market" | "school" | "garage" | "business";
 
 interface PhoneApp {
   id: AppId;
@@ -14,6 +14,14 @@ interface PhoneApp {
 }
 
 export const APPS: PhoneApp[] = [
+  {
+    id: "missions",
+    icon: "🎯",
+    name: "Missions",
+    ready: true,
+    color: "bg-foret",
+    badge: (c) => (c.state.missions.some((m) => m.status === "ready") ? "🎁" : null),
+  },
   { id: "work", icon: "💼", name: "Emplois", ready: true, color: "bg-indigo", badge: (c) => (c.state.job ? null : "!") },
   { id: "home", icon: "🏠", name: "Immobilier", ready: true, color: "bg-terre", badge: (c) => (c.state.home?.arrears ? "!" : null) },
   { id: "bag", icon: "🎒", name: "Sac", ready: true, color: "bg-ocre" },

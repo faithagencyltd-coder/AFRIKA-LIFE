@@ -86,6 +86,21 @@ export async function changeLook(category: string, option: string): Promise<Acti
   return call("change_look", { p_category: category, p_code: option });
 }
 
+export async function claimMission(mission: string): Promise<ActionResult> {
+  if (!code.safeParse(mission).success) return { ok: false, error: "Mission inconnue." };
+  return call("claim_mission", { p_code: mission });
+}
+
+export async function chooseGoal(goal: string): Promise<ActionResult> {
+  if (!code.safeParse(goal).success) return { ok: false, error: "Objectif inconnu." };
+  return call("choose_goal", { p_code: goal });
+}
+
+export async function dropGoal(goal: string): Promise<ActionResult> {
+  if (!code.safeParse(goal).success) return { ok: false, error: "Objectif inconnu." };
+  return call("drop_goal", { p_code: goal });
+}
+
 export async function markNotificationsRead(): Promise<ActionResult> {
   return call("mark_notifications_read");
 }

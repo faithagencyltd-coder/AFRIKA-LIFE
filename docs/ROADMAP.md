@@ -21,7 +21,7 @@ quand son code, ses tests et sa documentation sont fusionnés et que
 | 10 | Inventaire | ✅ Fait (A2) | 15 objets, 7 boutiques avec stock journalier, sac, nourriture à emporter, ingrédients pour cuisiner, meubles qui débloquent des activités à domicile, téléphones, garde-robe avec tenues achetées |
 | 11 | Multijoueur | ⏳ | Présence par lieu (Supabase Realtime), scène Phaser |
 | 12 | Chat | ⏳ | Privé, groupe, public par lieu ; signalement, blocage, filtre |
-| 13 | Missions | ⏳ | « Trouve un travail » (10 000), « Travaille 5 jours » (25 000)… |
+| 13 | Missions | ✅ Fait (A3) | « Trouve un travail » (10 000), « Travaille 5 jours » (25 000)… |
 | 14 | Monétisation | ⏳ | VIP, objets premium, Mobile Money |
 | 15 | Admin | ⏳ | Joueurs, sanctions, économie, catalogue, statistiques |
 | 16 | Tests | 🔁 Continu | Tests base + unitaires à chaque module |
@@ -33,10 +33,10 @@ quand son code, ses tests et sa documentation sont fusionnés et que
 |---|--------|------|
 | A1 | Nom WEST AFRICA LIFE + navigation « téléphone » | ✅ |
 | A2 | Inventaire + boutiques | ✅ |
-| A3 | Missions + objectifs personnels | ⏳ |
+| A3 | Missions (parcours « Nouvelle vie », 11 étapes) + objectifs personnels | ✅ |
 | A4 | Admin minimal + tableau de bord économique | ⏳ |
 | A5 | Compétences + réputation | ⏳ |
 
 ## Prochaine étape proposée
 
-**A3 — Missions** : parcours « Nouvelle vie » et objectifs choisis par le joueur.
+**A4 — Administration** : joueurs, sanctions, prix, tableau de bord économique.

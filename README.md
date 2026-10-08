@@ -5,7 +5,7 @@ Lancement à **Cotonou** 🇧🇯, puis Lomé 🇹🇬 et Abidjan 🇨🇮.
 
 > Nom provisoire (CdC V2). Ancien nom de code : PROJECT WA LIFE.
 
-## Ce qui est jouable aujourd'hui (étapes 1 à 7 et 9)
+## Ce qui est jouable aujourd'hui
 
 - Compte : e-mail + mot de passe, Google (à activer dans Supabase).
 - Création du personnage : prénom, pseudo unique, sexe, âge, pays/ville, apparence complète avec avatar en direct.
@@ -15,6 +15,9 @@ Lancement à **Cotonou** 🇧🇯, puis Lomé 🇹🇬 et Abidjan 🇨🇮.
 - 10 métiers, 5 niveaux par métier, salaire progressif ; il faut être en forme pour travailler.
 - Logement : 9 logements de la chambre au penthouse, location ou achat à l'agence, loyer prélevé chaque semaine
   de jeu, arriérés, expulsion, activités à domicile selon le confort, notifications.
+- Inventaire : 15 objets, 7 boutiques (stock du jour), sac, garde-robe, meubles qui débloquent des activités à domicile.
+- Missions : parcours guidé « Nouvelle vie » (11 étapes récompensées) et objectifs personnels.
+- Administration : tableau de bord économique, sanctions, prix, journal d'audit.
 - Économie serveur : 500 000 FCFA virtuels au départ, chaque franc est tracé.
 
 ## Documentation
@@ -39,6 +42,17 @@ npm run dev                        # http://localhost:3000
 npm run db:reset    # base de test PostgreSQL locale (émulation Supabase), PG* standard
 npm run check       # typage + lint + tests unitaires + tests base + build (comme la CI)
 npm run test:e2e    # parcours complet dans Chromium (Supabase local et npm run dev lancés)
+```
+
+## Administration
+
+Tableau de bord économique, joueurs (suspension, bannissement, ajustement d'argent tracé), prix et journal : `/admin`.
+Deux rôles : `admin` (tout) et `moderateur` (consultation et suspensions). Le premier administrateur se crée en SQL
+(Supabase › SQL Editor), après son inscription dans le jeu :
+
+```sql
+insert into public.admins (user_id, role)
+select id, 'admin' from auth.users where email = 'votre-email@exemple.com';
 ```
 
 ## Mise en production

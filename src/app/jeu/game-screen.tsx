@@ -165,6 +165,15 @@ export function GameScreen({
       </header>
 
       <main className="flex-1 space-y-4 px-4 pt-4">
+        {state.sanction && (
+          <div role="alert" className="rounded-2xl bg-red-700 p-4 text-white">
+            <p className="font-bold">⛔ Compte {state.sanction.kind}</p>
+            <p className="text-sm">
+              {state.sanction.until && `Jusqu'au ${new Date(state.sanction.until).toLocaleString("fr-FR")}. `}
+              Motif : {state.sanction.reason}
+            </p>
+          </div>
+        )}
         <NeedsPanel needs={c.needs} />
         {activity && <BusyCard activity={activity} now={now} />}
         {app && (

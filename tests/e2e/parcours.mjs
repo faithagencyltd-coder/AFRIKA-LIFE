@@ -165,7 +165,28 @@ try {
   await page.getByText("Salaire").first().waitFor();
   await shot("13-moi");
 
+  // Administration : le joueur reçoit le rôle admin (SQL, comme pour le premier admin réel)
+  await db.query("insert into admins (user_id, role) select user_id, 'admin' from characters where pseudo = $1", [pseudo]);
   await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(`${BASE}/admin`);
+  await page.getByText("Sources et puits d'argent").waitFor();
+  await shot("15-admin-economie");
+  await page.goto(`${BASE}/admin/joueurs?q=${pseudo}`);
+  await page.getByRole("button", { name: new RegExp(`@${pseudo}`) }).click();
+  await page.getByPlaceholder("Motif (obligatoire)").fill("Test de modération");
+  await page.getByRole("button", { name: "Suspendre" }).click();
+  await page.getByText("Joueur suspendu.").waitFor();
+  await shot("16-admin-joueurs");
+  await page.goto(`${BASE}/jeu`);
+  await page.getByText("Compte suspendu").waitFor();
+  await page.goto(`${BASE}/admin/joueurs?q=${pseudo}`);
+  await page.getByRole("button", { name: new RegExp(`@${pseudo}`) }).click();
+  await page.getByRole("button", { name: "Lever la sanction" }).click();
+  await page.getByText("Sanction levée.").waitFor();
+  await page.goto(`${BASE}/admin/journal`);
+  await page.getByText("sanction suspendu").first().waitFor();
+  await page.goto(`${BASE}/jeu`);
+
   await tab("Carte").click();
   await shot("14-ordinateur-carte");
 

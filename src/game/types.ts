@@ -93,6 +93,7 @@ export interface GameState {
   inventory: InventoryEntry[];
   missions: { code: string; progress: number; status: "locked" | "active" | "ready" | "claimed" }[];
   goals: { code: string; progress: number }[];
+  sanction: { kind: "suspendu" | "banni"; until: string | null; reason: string | null } | null;
 }
 
 export interface Mission {

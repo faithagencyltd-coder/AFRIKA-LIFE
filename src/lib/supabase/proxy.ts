@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured, publicEnv } from "@/lib/env";
 
 /** Pages réservées aux joueurs connectés. */
-const PROTECTED = ["/jeu", "/personnage"];
+const PROTECTED = ["/jeu", "/personnage", "/admin"];
 
 const isProtected = (pathname: string) => PROTECTED.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 

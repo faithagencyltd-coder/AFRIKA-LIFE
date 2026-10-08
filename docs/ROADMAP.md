@@ -4,6 +4,9 @@ Suivi des 17 étapes du cahier des charges (§56). Une étape est « faite »
 quand son code, ses tests et sa documentation sont fusionnés et que
 `npm run check` passe.
 
+> Cahier des charges V2 (WEST AFRICA LIFE) : voir [ANALYSE-V2.md](ANALYSE-V2.md) pour la
+> correspondance avec l'existant et l'ordre d'implémentation proposé (phases A à G).
+
 | Étape | Module | État | Contenu livré / à livrer |
 |------:|--------|------|--------------------------|
 | 1 | Architecture | ✅ Fait | `docs/ARCHITECTURE.md`, dépôt, CI, base de test locale |

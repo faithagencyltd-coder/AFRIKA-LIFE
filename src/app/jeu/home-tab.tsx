@@ -5,6 +5,7 @@ import { buyHome, doHomeActivity, leaveHome, payHomeArrears, rentHome } from "@/
 
 import { EffectChips } from "./effect-chips";
 import type { GameContext } from "./game-screen";
+import { itemNames, owned } from "./inventory-apps";
 
 export function Stars({ value, max = 5, dimmed = 0 }: { value: number; max?: number; dimmed?: number }) {
   return (
@@ -26,7 +27,9 @@ export function HomeActivities({ ctx }: { ctx: GameContext }) {
   return (
     <ul className="divide-y divide-encre/5">
       {ctx.catalog.homeActivities.map((a) => {
-        const locked = home.effective_comfort < a.min_comfort;
+        const byItem = !!a.required_items?.some((code) => owned(ctx, code) > 0);
+        const locked = home.effective_comfort < a.min_comfort && !byItem;
+        const lacking = a.consumes_item && owned(ctx, a.consumes_item) === 0 ? a.consumes_item : null;
         return (
           <li key={a.code} className={`flex items-center justify-between gap-3 py-2.5 ${locked ? "opacity-55" : ""}`}>
             <div className="min-w-0">
@@ -36,11 +39,22 @@ export function HomeActivities({ ctx }: { ctx: GameContext }) {
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-brume">
                 <span>⏱ {formatGameDuration(a.duration_minutes)}</span>
-                {locked ? <span>confort {a.min_comfort} requis</span> : <EffectChips effects={a.effects} />}
+                {locked ? (
+                  <span>
+                    confort {a.min_comfort} requis{a.required_items && ` ou ${itemNames(ctx, a.required_items)}`}
+                  </span>
+                ) : (
+                  <EffectChips effects={a.effects} />
+                )}
+                {!locked && a.consumes_item && (
+                  <span className={lacking ? "font-semibold text-red-700" : ""}>
+                    utilise 1 {itemNames(ctx, [a.consumes_item])} ({owned(ctx, a.consumes_item)})
+                  </span>
+                )}
               </div>
             </div>
             <button
-              disabled={locked || !atHome || ctx.busy || ctx.pending || a.price > ctx.state.character.cash}
+              disabled={locked || !!lacking || !atHome || ctx.busy || ctx.pending || a.price > ctx.state.character.cash}
               onClick={() => ctx.run(() => doHomeActivity(a.code))}
               className="shrink-0 rounded-xl bg-terre px-3 py-2 text-sm font-bold text-white disabled:bg-encre/20"
             >

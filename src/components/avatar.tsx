@@ -103,7 +103,7 @@ export function Avatar({ appearance, gender, size = 160, className, title }: Pro
       </g>
 
       {/* Buste / tenue */}
-      {outfit === "boubou" ? (
+      {outfit === "boubou" || outfit === "basin_brode" ? (
         <path d={`M${60 - shoulder - 4} 80 Q60 72 ${60 + shoulder + 4} 80 L${60 + shoulder + 16} 168 Q60 174 ${60 - shoulder - 16} 168 Z`} fill={cloth} />
       ) : outfit === "robe_wax" ? (
         <path d={`M${60 - shoulder + 2} 80 Q60 74 ${60 + shoulder - 2} 80 L${60 + shoulder - 6} 120 L${60 + shoulder + 8} 162 Q60 168 ${60 - shoulder - 8} 162 L${60 - shoulder + 6} 120 Z`} fill={fabric} />
@@ -117,6 +117,15 @@ export function Avatar({ appearance, gender, size = 160, className, title }: Pro
       )}
       {outfit === "boubou" && (
         <path d="M50 80 Q60 96 70 80" fill="none" stroke={accent} strokeWidth="2.5" />
+      )}
+      {outfit === "basin_brode" && (
+        <g fill="none" stroke={GOLD} strokeLinecap="round">
+          <path d="M48 80 Q60 104 72 80" strokeWidth="3" />
+          <path d="M52 84 Q60 98 68 84" strokeWidth="1.4" />
+          <path d="M60 100 L60 124 M54 108 L66 108 M55 116 L65 116" strokeWidth="1.6" />
+          <circle cx="60" cy="127" r="3" strokeWidth="1.4" />
+          <path d="M40 160 Q60 166 80 160" strokeWidth="1.6" />
+        </g>
       )}
       {outfit === "costume" && (
         <g>
@@ -180,6 +189,13 @@ export function Avatar({ appearance, gender, size = 160, className, title }: Pro
         <g>
           <path d="M37 32 Q60 4 83 32 Z" fill={appearance.outfit_color === "blanc" ? "#2e3a8c" : "#f2efe8"} />
           <path d="M60 30 Q86 28 96 34 Q80 36 60 34 Z" fill={appearance.outfit_color === "blanc" ? "#1e2766" : "#d8d3c8"} />
+        </g>
+      )}
+      {accessory === "chapeau" && hair !== "foulard" && (
+        <g>
+          <ellipse cx="60" cy="25" rx="32" ry="6" fill="#e8d7a8" stroke="#b89d5c" strokeWidth="0.8" />
+          <path d="M42 25 Q42 6 60 6 Q78 6 78 25 Z" fill="#efe1b8" stroke="#b89d5c" strokeWidth="0.8" />
+          <rect x="42.5" y="18" width="35" height="5" fill="#23211f" />
         </g>
       )}
       {accessory === "montre" && <rect x={60 + shoulder - 3} y="124" width="9" height="5" rx="1.5" fill={GOLD} />}

@@ -6,6 +6,8 @@ export interface AppearanceOption {
   code: string;
   label: string;
   color?: string;
+  /** false : s'achète en boutique (absent de la création du personnage). */
+  starter?: boolean;
 }
 
 export const APPEARANCE: Record<AppearanceCategory, { label: string; options: AppearanceOption[] }> = {
@@ -52,6 +54,7 @@ export const APPEARANCE: Record<AppearanceCategory, { label: string; options: Ap
       { code: "ensemble_pagne", label: "Ensemble pagne" },
       { code: "costume", label: "Costume" },
       { code: "maillot", label: "Maillot de foot" },
+      { code: "basin_brode", label: "Basin brodé", starter: false },
     ],
   },
   outfit_color: {
@@ -84,6 +87,7 @@ export const APPEARANCE: Record<AppearanceCategory, { label: string; options: Ap
       { code: "montre", label: "Montre" },
       { code: "chaine", label: "Chaîne" },
       { code: "boucles", label: "Boucles d'oreilles" },
+      { code: "chapeau", label: "Chapeau panama", starter: false },
     ],
   },
 };
@@ -105,10 +109,15 @@ export function colorOf(category: "skin" | "outfit_color", code: string): string
   return (options.find((o) => o.code === code) ?? options[0]!).color!;
 }
 
-/** Apparence aléatoire (bouton « Surprends-moi »). */
+/** Options proposées à la création du personnage. */
+export function starterOptions(category: AppearanceCategory): AppearanceOption[] {
+  return APPEARANCE[category].options.filter((o) => o.starter !== false);
+}
+
+/** Apparence aléatoire (bouton « Surprends-moi »), parmi les options de départ. */
 export function randomAppearance(random: () => number = Math.random): Appearance {
   const pick = (c: AppearanceCategory) => {
-    const options = APPEARANCE[c].options;
+    const options = starterOptions(c);
     return options[Math.floor(random() * options.length)]!.code;
   };
   return Object.fromEntries(APPEARANCE_CATEGORIES.map((c) => [c, pick(c)])) as Appearance;

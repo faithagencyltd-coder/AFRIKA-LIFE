@@ -69,6 +69,23 @@ export async function doHomeActivity(activity: string): Promise<ActionResult> {
   return call("start_home_activity", { p_code: activity });
 }
 
+export async function buyItem(building: string, item: string, quantity = 1): Promise<ActionResult> {
+  if (!code.safeParse(building).success || !code.safeParse(item).success || !Number.isInteger(quantity)) {
+    return { ok: false, error: "Achat invalide." };
+  }
+  return call("buy_item", { p_building: building, p_item: item, p_quantity: quantity });
+}
+
+export async function consumeItem(item: string): Promise<ActionResult> {
+  if (!code.safeParse(item).success) return { ok: false, error: "Objet inconnu." };
+  return call("use_item", { p_item: item });
+}
+
+export async function changeLook(category: string, option: string): Promise<ActionResult> {
+  if (!code.safeParse(category).success || !code.safeParse(option).success) return { ok: false, error: "Option inconnue." };
+  return call("change_look", { p_category: category, p_code: option });
+}
+
 export async function markNotificationsRead(): Promise<ActionResult> {
   return call("mark_notifications_read");
 }

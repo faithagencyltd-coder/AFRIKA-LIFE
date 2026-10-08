@@ -90,6 +90,12 @@ export interface GameState {
   careers: { code: string; level: number; xp: number; shifts: number; is_active: boolean }[];
   home: HomeState | null;
   unread_notifications: number;
+  inventory: InventoryEntry[];
+}
+
+export interface InventoryEntry {
+  code: string;
+  quantity: number;
 }
 
 // Catalogue (tables publiques).
@@ -121,6 +127,7 @@ export interface Activity {
   effects: Effects;
   xp: number;
   sort: number;
+  required_items: string[] | null;
 }
 export interface Job {
   code: string;
@@ -186,6 +193,29 @@ export interface HomeActivity {
   price: number;
   effects: Effects;
   xp: number;
+  required_items: string[] | null;
+  consumes_item: string | null;
+}
+export type ItemCategory = "nourriture" | "ingredient" | "vetement" | "meuble" | "telephone";
+export interface Item {
+  code: string;
+  name: string;
+  category: ItemCategory;
+  icon: string;
+  description: string;
+  use_minutes: number | null;
+  effects: Effects;
+  appearance_category: AppearanceCategory | null;
+  appearance_code: string | null;
+  max_stack: number;
+}
+export interface ShopItem {
+  building_code: string;
+  item_code: string;
+  price: number;
+  stock_max: number;
+  stock: number;
+  restocked_day: number;
 }
 export interface GameNotification {
   id: number;
@@ -212,6 +242,8 @@ export interface Catalog {
   quotes: TravelQuote[];
   homes: Home[];
   homeActivities: HomeActivity[];
+  items: Item[];
+  shopItems: ShopItem[];
 }
 
 /** Résultat d'une Server Action. */

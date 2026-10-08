@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { Avatar } from "@/components/avatar";
-import { APPEARANCE, APPEARANCE_CATEGORIES, DEFAULT_APPEARANCE, randomAppearance } from "@/game/appearance";
+import { APPEARANCE, APPEARANCE_CATEGORIES, DEFAULT_APPEARANCE, randomAppearance, starterOptions } from "@/game/appearance";
 import type { Appearance, AppearanceCategory, City, Country, Gender } from "@/game/types";
 import { createCharacter } from "@/server/game-actions";
 
@@ -140,7 +140,7 @@ export function CharacterCreator({ countries, cities }: { countries: Country[]; 
             ))}
           </div>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {APPEARANCE[category].options.map((o) => (
+            {starterOptions(category).map((o) => (
               <button
                 key={o.code}
                 type="button"

@@ -18,7 +18,7 @@ quand son code, ses tests et sa documentation sont fusionnés et que
 | 7 | Métiers | ✅ Fait | 10 métiers débutants, 5 niveaux, salaire progressif, conditions physiques pour travailler |
 | 8 | Économie | 🟡 Base posée | Grand livre `transactions` ; à faire : taxes virtuelles, tableau de bord des flux |
 | 9 | Logement | ✅ Fait | 9 logements (chambre → penthouse), location et achat à l'agence, loyer prélevé chaque semaine de jeu, arriérés + 10 %, perte de confort, expulsion au 3e impayé, revente à 80 %, 9 activités à domicile, notifications |
-| 10 | Inventaire | ⏳ | Objets, nourriture achetée, vêtements |
+| 10 | Inventaire | ✅ Fait (A2) | 15 objets, 7 boutiques avec stock journalier, sac, nourriture à emporter, ingrédients pour cuisiner, meubles qui débloquent des activités à domicile, téléphones, garde-robe avec tenues achetées |
 | 11 | Multijoueur | ⏳ | Présence par lieu (Supabase Realtime), scène Phaser |
 | 12 | Chat | ⏳ | Privé, groupe, public par lieu ; signalement, blocage, filtre |
 | 13 | Missions | ⏳ | « Trouve un travail » (10 000), « Travaille 5 jours » (25 000)… |
@@ -27,9 +27,16 @@ quand son code, ses tests et sa documentation sont fusionnés et que
 | 16 | Tests | 🔁 Continu | Tests base + unitaires à chaque module |
 | 17 | Déploiement | ⏳ | Vercel + Supabase, domaine, supervision |
 
+## Phase A du CdC V2 (voir ANALYSE-V2.md §7)
+
+| # | Module | État |
+|---|--------|------|
+| A1 | Nom WEST AFRICA LIFE + navigation « téléphone » | ✅ |
+| A2 | Inventaire + boutiques | ✅ |
+| A3 | Missions + objectifs personnels | ⏳ |
+| A4 | Admin minimal + tableau de bord économique | ⏳ |
+| A5 | Compétences + réputation | ⏳ |
+
 ## Prochaine étape proposée
 
-**Étape 10 — Inventaire et mobilier** (§14, §18, §19) : acheter de la
-nourriture au marché pour cuisiner chez soi, des vêtements qui changent
-l'avatar, et des meubles (lit, climatiseur, télévision…) qui augmentent le
-confort du logement.
+**A3 — Missions** : parcours « Nouvelle vie » et objectifs choisis par le joueur.

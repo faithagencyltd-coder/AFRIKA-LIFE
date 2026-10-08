@@ -2,11 +2,12 @@ import { formatGameDuration, isOpenAt, realMsForGameMinutes } from "@/game/clock
 import { fcfa, jobName } from "@/game/format";
 import type { Activity, Building } from "@/game/types";
 import { fr } from "@/i18n/fr";
-import { applyForJob, doActivity, startWork } from "@/server/game-actions";
+import { applyForJob, buyItem, doActivity, startWork } from "@/server/game-actions";
 
 import { EffectChips } from "./effect-chips";
 import type { GameContext } from "./game-screen";
 import { HomeActivities, Stars } from "./home-tab";
+import { itemNames, owned } from "./inventory-apps";
 
 const BUILDING_ICON: Record<string, string> = {
   marche: "🛒",
@@ -78,6 +79,8 @@ function BuildingCard({ building: b, ctx }: { building: Building; ctx: GameConte
   const open = isOpenAt(b.open_hour, b.close_hour, minute);
   const activities = catalog.activities.filter((a) => a.building_code === b.code);
   const jobs = catalog.jobs.filter((j) => j.building_code === b.code);
+  const shop = catalog.shopItems.filter((si) => si.building_code === b.code);
+  const today = Math.floor(minute / 1440);
   const hours = b.open_hour === 0 && b.close_hour === 24 ? "24 h/24" : `${b.open_hour}h – ${b.close_hour % 24}h`;
 
   return (
@@ -105,6 +108,38 @@ function BuildingCard({ building: b, ctx }: { building: Building; ctx: GameConte
           {activities.map((a) => (
             <ActivityRow key={a.code} activity={a} open={open} ctx={ctx} />
           ))}
+        </ul>
+      )}
+
+      {shop.length > 0 && (
+        <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+          {shop.map((si) => {
+            const item = catalog.items.find((i) => i.code === si.item_code);
+            if (!item) return null;
+            const stock = si.restocked_day < today ? si.stock_max : si.stock;
+            const have = owned(ctx, item.code);
+            const full = have >= item.max_stack;
+            return (
+              <li key={si.item_code} className="flex items-center justify-between gap-2 rounded-xl bg-white p-2.5 ring-1 ring-encre/5">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">
+                    <span aria-hidden>{item.icon}</span> {item.name}
+                  </p>
+                  <p className="text-[11px] text-brume">
+                    {stock > 0 ? `${stock} en stock` : "Épuisé aujourd'hui"}
+                    {have > 0 && ` · ${have} dans le sac`}
+                  </p>
+                </div>
+                <button
+                  disabled={!open || stock === 0 || full || si.price > state.character.cash || ctx.busy || ctx.pending}
+                  onClick={() => ctx.run(() => buyItem(b.code, item.code), `${item.icon} ${item.name} ajouté au sac.`)}
+                  className="shrink-0 rounded-lg bg-foret px-2.5 py-1.5 text-xs font-bold text-white disabled:bg-encre/20"
+                >
+                  {fcfa(si.price)}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -150,6 +185,7 @@ function BuildingCard({ building: b, ctx }: { building: Building; ctx: GameConte
 
 function ActivityRow({ activity: a, open, ctx }: { activity: Activity; open: boolean; ctx: GameContext }) {
   const tooExpensive = a.price > ctx.state.character.cash;
+  const missing = a.required_items && !a.required_items.some((code) => owned(ctx, code) > 0) ? a.required_items : null;
   const realMinutes = Math.round(realMsForGameMinutes(a.duration_minutes, ctx.state.clock.time_scale) / 60_000);
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
@@ -161,10 +197,11 @@ function ActivityRow({ activity: a, open, ctx }: { activity: Activity; open: boo
             <span className="opacity-70"> ({realMinutes < 1 ? "< 1" : realMinutes} min)</span>
           </span>
           <EffectChips effects={a.effects} />
+          {missing && <span className="font-semibold text-red-700">Il faut : {itemNames(ctx, missing)}</span>}
         </div>
       </div>
       <button
-        disabled={!open || tooExpensive || ctx.busy || ctx.pending}
+        disabled={!open || tooExpensive || !!missing || ctx.busy || ctx.pending}
         onClick={() => ctx.run(() => doActivity(a.code))}
         className="shrink-0 rounded-xl bg-terre px-3 py-2 text-sm font-bold text-white transition hover:bg-terre-fonce disabled:bg-encre/20"
       >

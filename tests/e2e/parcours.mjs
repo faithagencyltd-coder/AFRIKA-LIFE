@@ -93,6 +93,25 @@ try {
   await tab("Ici").click();
   await page.getByRole("heading", { name: "Dantokpa", exact: true }).waitFor();
 
+  // Marché : beignets et basin brodé, beignets mangés depuis le sac, basin porté via la garde-robe
+  const wallet = await cash();
+  await page.locator("li", { hasText: /🍩\s*Beignets/ }).getByRole("button").click();
+  await page.getByText("Beignets ajouté au sac").waitFor();
+  await page.locator("li", { hasText: /👘\s*Basin brodé/ }).getByRole("button").click();
+  await page.getByText("Basin brodé ajouté au sac").waitFor();
+  assert.equal(await cash(), wallet - 300 - 42000);
+  await shot("06b-marche");
+  await openApp("Sac");
+  await page.locator("li", { hasText: /🍩\s*Beignets/ }).getByRole("button", { name: "Consommer" }).click();
+  await page.locator("section[aria-live]", { hasText: "Consommer : Beignets" }).waitFor();
+  await finishActivity();
+  await page.reload();
+  await openApp("Garde-robe");
+  await page.getByRole("button", { name: /Basin brodé/ }).click();
+  await page.locator('button[aria-pressed="true"]', { hasText: "Basin brodé" }).waitFor();
+  await shot("06c-garde-robe");
+  await tab("Ici").click();
+
   // Embauche puis service
   await page.locator("div", { hasText: /^📢 Recrute : Vendeuse au marché/ }).getByRole("button", { name: "Postuler" }).click();
   await page.getByText("Votre poste").waitFor();
@@ -103,7 +122,7 @@ try {
   await finishActivity();
   await page.reload();
   await page.locator("section[aria-live]").waitFor({ state: "detached" });
-  assert.equal(await cash(), 502400, "500 000 − 600 (zém) + 3 000 (salaire)");
+  assert.equal(await cash(), 502400 - 42300, "500 000 − 600 (zém) − 42 300 (marché) + 3 000 (salaire)");
 
   // Logement : zémidjan jusqu'à l'agence (Ganhi), location d'une chambre à Agla, retour, nuit chez soi.
   await tab("Carte").click();

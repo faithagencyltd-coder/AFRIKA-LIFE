@@ -12,6 +12,7 @@ import { fr } from "@/i18n/fr";
 import { BusyCard } from "./busy-card";
 import { HereTab } from "./here-tab";
 import { HomeTab } from "./home-tab";
+import { BagApp, WardrobeApp } from "./inventory-apps";
 import { MapTab } from "./map-tab";
 import { MeTab } from "./me-tab";
 import { NeedsPanel } from "./needs-panel";
@@ -175,6 +176,8 @@ export function GameScreen({
         {view === "phone" && <PhoneHome ctx={ctx} />}
         {view === "work" && <WorkTab ctx={ctx} />}
         {view === "home" && <HomeTab ctx={ctx} />}
+        {view === "bag" && <BagApp ctx={ctx} />}
+        {view === "wardrobe" && <WardrobeApp ctx={ctx} />}
         {view === "me" && <MeTab ctx={ctx} ledger={ledger} notifications={notifications} />}
       </main>
 

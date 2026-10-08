@@ -7,9 +7,9 @@ import { newPlayer, pool, rejects, tx } from "./helpers.mjs";
 after(() => pool.end());
 
 const PUBLIC_RPC = [
-  "apply_for_job", "building_is_open", "buy_home", "create_character", "game_minute", "game_state", "job_level", "job_pay",
+  "apply_for_job", "building_is_open", "buy_home", "buy_item", "change_look", "create_character", "game_minute", "game_state", "job_level", "job_pay",
   "leave_home", "mark_notifications_read", "need_keys", "pay_home_arrears", "player_level", "quit_job", "real_duration",
-  "rent_home", "rent_period", "start_activity", "start_home_activity", "start_work", "travel_quotes", "travel_to",
+  "rent_home", "rent_period", "start_activity", "start_home_activity", "start_work", "travel_quotes", "travel_to", "use_item",
 ];
 
 describe("Sécurité", () => {
@@ -28,6 +28,8 @@ describe("Sécurité", () => {
         "update character_homes set arrears = 0",
         "update homes set rent_per_week = 1",
         "delete from notifications",
+        "insert into inventory (character_id, item_code, quantity) values ('" + p.characterId + "', 'smartphone', 1)",
+        "update shop_items set price = 1",
       ]) {
         assert.match(await rejects(t.q(sql)), /permission denied/, sql);
       }
@@ -98,6 +100,7 @@ describe("Catalogue", () => {
       const empty = await t.q(`select b.code from buildings b
         where not exists (select 1 from activities a where a.building_code = b.code)
           and not exists (select 1 from jobs j where j.building_code = b.code)
+          and not exists (select 1 from shop_items s where s.building_code = b.code)
           and b.kind <> 'agence'`);
       assert.deepEqual(empty, []);
       const fill = await t.q(`select key, count(*)::int n from activities, jsonb_each(effects) e

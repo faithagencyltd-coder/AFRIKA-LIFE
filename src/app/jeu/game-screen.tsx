@@ -14,6 +14,7 @@ import { HereTab } from "./here-tab";
 import { HomeTab } from "./home-tab";
 import { BagApp, WardrobeApp } from "./inventory-apps";
 import { MissionsApp } from "./missions-app";
+import { SkillsApp } from "./skills-app";
 import { MapTab } from "./map-tab";
 import { MeTab } from "./me-tab";
 import { NeedsPanel } from "./needs-panel";
@@ -188,6 +189,7 @@ export function GameScreen({
         {view === "home" && <HomeTab ctx={ctx} />}
         {view === "missions" && <MissionsApp ctx={ctx} />}
         {view === "bag" && <BagApp ctx={ctx} />}
+        {view === "skills" && <SkillsApp ctx={ctx} />}
         {view === "wardrobe" && <WardrobeApp ctx={ctx} />}
         {view === "me" && <MeTab ctx={ctx} ledger={ledger} notifications={notifications} />}
       </main>

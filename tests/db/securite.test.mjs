@@ -10,7 +10,7 @@ const PUBLIC_RPC = [
   "admin_adjust_cash", "admin_audit_log", "admin_economy", "admin_players", "admin_prices", "admin_role", "admin_sanction", "admin_set_price",
   "apply_for_job", "building_is_open", "buy_home", "buy_item", "change_look", "choose_goal", "claim_mission", "create_character", "drop_goal", "game_minute", "game_state", "job_level", "job_pay",
   "leave_home", "mark_notifications_read", "need_keys", "outing_codes", "pay_home_arrears", "player_level", "quit_job", "real_duration",
-  "rent_home", "rent_period", "start_activity", "start_home_activity", "start_work", "travel_quotes", "travel_to", "use_item",
+  "rent_home", "rent_period", "skill_level", "start_activity", "start_home_activity", "start_work", "travel_quotes", "travel_to", "use_item",
 ];
 
 describe("Sécurité", () => {
@@ -35,6 +35,8 @@ describe("Sécurité", () => {
         "update missions set reward_cash = 99999999",
         "insert into admins (user_id, role) values ('" + p.userId + "', 'admin')",
         "update characters set sanction = null",
+        "update characters set rep_pro = 1000",
+        "insert into character_skills (character_id, skill_code, xp) values ('" + p.characterId + "', 'commerce', 5000)",
       ]) {
         assert.match(await rejects(t.q(sql)), /permission denied/, sql);
       }

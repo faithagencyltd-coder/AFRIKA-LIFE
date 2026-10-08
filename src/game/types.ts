@@ -94,6 +94,19 @@ export interface GameState {
   missions: { code: string; progress: number; status: "locked" | "active" | "ready" | "claimed" }[];
   goals: { code: string; progress: number }[];
   sanction: { kind: "suspendu" | "banni"; until: string | null; reason: string | null } | null;
+  skills: { code: string; xp: number; level: number }[];
+  reputation: { pro: number; social: number; commercial: number };
+}
+
+export interface Gains {
+  skills?: Record<string, number>;
+  rep?: Partial<Record<"pro" | "social" | "commercial", number>>;
+}
+export interface Skill {
+  code: string;
+  name: string;
+  icon: string;
+  description: string;
 }
 
 export interface Mission {
@@ -161,6 +174,7 @@ export interface Job {
   shift_start_hour: number;
   shift_end_hour: number;
   effects: Effects;
+  gains: Gains;
 }
 export interface TransportMode {
   code: string;
@@ -266,6 +280,7 @@ export interface Catalog {
   shopItems: ShopItem[];
   missions: Mission[];
   goals: Goal[];
+  skills: Skill[];
 }
 
 /** Résultat d'une Server Action. */

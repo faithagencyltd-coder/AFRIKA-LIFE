@@ -35,8 +35,10 @@ quand son code, ses tests et sa documentation sont fusionnés et que
 | A2 | Inventaire + boutiques | ✅ |
 | A3 | Missions (parcours « Nouvelle vie », 11 étapes) + objectifs personnels | ✅ |
 | A4 | Admin (rôles, sanctions, argent tracé, prix, journal) + tableau de bord économique | ✅ |
-| A5 | Compétences + réputation | ⏳ |
+| A5 | Compétences (9) + réputation (pro, sociale, commerciale) | ✅ |
 
 ## Prochaine étape proposée
 
-**A5 — Compétences et réputation**, puis l'alpha fermée.
+**Alpha fermée** (déploiement Vercel + Supabase, petit groupe de testeurs), puis
+**phase B** : présence des autres joueurs, chat modéré, amis, banque, véhicules,
+Porto-Novo et Abomey-Calavi.

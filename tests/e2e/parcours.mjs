@@ -161,6 +161,10 @@ try {
   await shot("12-telephone");
   await openApp("Emplois");
   await shot("12-travail");
+  // Compétences gagnées pendant le service au marché
+  await openApp("Compétences");
+  await page.getByText("3/25 XP").first().waitFor();
+  await shot("12b-competences");
   await tab("Moi").click();
   await page.getByText("Salaire").first().waitFor();
   await shot("13-moi");

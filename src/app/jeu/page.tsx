@@ -16,6 +16,7 @@ import type {
   LedgerEntry,
   Mission,
   ShopItem,
+  Skill,
   TransportMode,
   TravelQuote,
 } from "@/game/types";
@@ -37,12 +38,12 @@ export default async function JeuPage() {
   const districts = ((districtsRes.data ?? []) as District[]).map((d) => ({ ...d, x_km: Number(d.x_km), y_km: Number(d.y_km) }));
   const districtCodes = districts.map((d) => d.code);
 
-  const [buildings, activities, jobs, modes, quotes, ledger, homes, homeActivities, notifications, items, shopItems, missions, goals] = await Promise.all([
+  const [buildings, activities, jobs, modes, quotes, ledger, homes, homeActivities, notifications, items, shopItems, missions, goals, skills] = await Promise.all([
     supabase.from("buildings").select("code, district_code, name, kind, description, open_hour, close_hour, sort").in("district_code", districtCodes).order("sort"),
     supabase.from("activities").select("code, building_code, name, description, duration_minutes, price, effects, xp, sort, required_items").eq("is_active", true).order("sort"),
     supabase
       .from("jobs")
-      .select("code, building_code, name, name_feminine, description, required_level, base_pay, shift_minutes, shift_start_hour, shift_end_hour, effects")
+      .select("code, building_code, name, name_feminine, description, required_level, base_pay, shift_minutes, shift_start_hour, shift_end_hour, effects, gains")
       .eq("is_active", true)
       .order("sort"),
     supabase.from("transport_modes").select("code, name, icon").order("sort"),
@@ -67,6 +68,7 @@ export default async function JeuPage() {
     supabase.from("shop_items").select("building_code, item_code, price, stock_max, stock, restocked_day"),
     supabase.from("missions").select("code, title, description, icon, target, reward_cash, reward_xp").order("sort"),
     supabase.from("goals").select("code, title, icon, objective_type, target").order("sort"),
+    supabase.from("skills").select("code, name, icon, description").order("sort"),
   ]);
 
   const buildingCodes = new Set(((buildings.data ?? []) as Building[]).map((b) => b.code));
@@ -92,6 +94,7 @@ export default async function JeuPage() {
       .map((si) => ({ ...si, price: Number(si.price), restocked_day: Number(si.restocked_day) })),
     missions: ((missions.data ?? []) as Mission[]).map((m) => ({ ...m, target: Number(m.target), reward_cash: Number(m.reward_cash) })),
     goals: ((goals.data ?? []) as Goal[]).map((g) => ({ ...g, target: Number(g.target) })),
+    skills: (skills.data ?? []) as Skill[],
   };
   const entries = ((ledger.data ?? []) as LedgerEntry[]).map((e) => ({ ...e, amount: Number(e.amount), balance_after: Number(e.balance_after) }));
 

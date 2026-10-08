@@ -326,3 +326,8 @@ wa-life/
 | 2026-10-09 | D-07 Loyer prélevé automatiquement, y compris pendant les absences (contrairement aux besoins) : c'est le principal puits d'argent. |
 | 2026-10-09 | D-08 Expulsion au 3e impayé (locataire uniquement) ; arriérés = loyer + 10 %. |
 | 2026-10-09 | D-09 Un seul logement occupé en V1 ; la possession de plusieurs biens viendra avec l'immobilier (V2). |
+| 2026-10-10 | D-10 CdC V2 : nom WEST AFRICA LIFE ; navigation par « téléphone du personnage » (une application par module). |
+| 2026-10-10 | D-11 `_state` = `_state_core` (personnage, emploi, logement) + `_state_modules` (remplacé à chaque nouveau module). |
+| 2026-10-10 | D-12 Missions et objectifs : progression calculée depuis les données du serveur, jamais déclarée par le client. |
+| 2026-10-11 | D-13 Administration : rôles admin / modérateur ; chaque action est revérifiée en SQL et inscrite au journal d'audit. |
+| 2026-10-11 | D-14 Compétences et réputation gagnées à la fin des actions (colonne `gains` des métiers et activités). |

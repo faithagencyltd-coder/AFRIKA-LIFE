@@ -4,6 +4,7 @@ import { quitJob, startWork } from "@/server/game-actions";
 
 import { EffectChips } from "./effect-chips";
 import type { GameContext } from "./game-screen";
+import { GainChips } from "./skills-app";
 
 export function WorkTab({ ctx }: { ctx: GameContext }) {
   const { state, catalog, minute } = ctx;
@@ -96,6 +97,9 @@ export function WorkTab({ ctx }: { ctx: GameContext }) {
                     {fcfa(j.base_pay)} / service · {b?.name} · {districtOf(b?.district_code ?? "")?.name}
                     {career && !career.is_active && ` · ancien poste, niveau ${career.level}`}
                   </p>
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    <GainChips ctx={ctx} gains={j.gains} />
+                  </div>
                 </div>
                 {locked ? (
                   <span className="shrink-0 rounded-full bg-encre/10 px-2 py-1 text-xs font-semibold text-brume">🔒 Niv. {j.required_level}</span>

@@ -1,5 +1,6 @@
 // Parcours complet dans un vrai navigateur (Supabase local + `npm run dev` lancés) :
-// inscription → personnage → toilettes → zémidjan → embauche → service → salaire.
+// inscription → personnage → toilettes → zémidjan → embauche → service → salaire
+// → agence → location → nuit chez soi.
 // Usage : node tests/e2e/parcours.mjs [dossier_captures]
 // Variables : BASE_URL (http://localhost:3000), DATABASE_URL (Supabase local), CHROMIUM_PATH.
 import assert from "node:assert/strict";
@@ -99,15 +100,43 @@ try {
   await page.locator("section[aria-live]").waitFor({ state: "detached" });
   assert.equal(await cash(), 502400, "500 000 − 600 (zém) + 3 000 (salaire)");
 
+  // Logement : zémidjan jusqu'à l'agence (Ganhi), location d'une chambre à Agla, retour, nuit chez soi.
+  await tab("Carte").click();
+  await page.getByRole("button", { name: "Ganhi" }).click();
+  await page.locator("li", { hasText: "Zémidjan" }).getByRole("button").click();
+  await page.locator("section[aria-live]", { hasText: "Trajet vers Ganhi" }).waitFor();
+  await finishActivity();
+  await page.reload();
+  await tab("Ici").click();
+  await page.getByRole("button", { name: /Voir les annonces/ }).click();
+  await shot("09-annonces");
+  const before = await cash();
+  await page.locator("li", { hasText: "Chambre à Agla" }).getByRole("button", { name: /Louer/ }).click();
+  await page.getByText("Prochain prélèvement").waitFor();
+  assert.equal(await cash(), before - 30000, "1re semaine + caution");
+  await shot("10-logement");
+  await page.getByRole("button", { name: /Rentrer à Agla/ }).click();
+  await page.locator("li", { hasText: "Zémidjan" }).getByRole("button").click();
+  await page.locator("section[aria-live]", { hasText: "Trajet vers Agla" }).waitFor();
+  await finishActivity();
+  await page.reload();
+  await tab("Ici").click();
+  await page.getByText("🏠 Chez moi").waitFor();
+  await page.locator("li", { hasText: "Dormir chez soi" }).getByRole("button").click();
+  await page.locator("section[aria-live]", { hasText: "Dormir chez soi" }).waitFor();
+  await shot("11-chez-moi");
+  await finishActivity();
+  await page.reload();
+
   await tab("Travail").click();
-  await shot("09-travail");
+  await shot("12-travail");
   await tab("Moi").click();
   await page.getByText("Salaire").first().waitFor();
-  await shot("10-moi");
+  await shot("13-moi");
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await tab("Carte").click();
-  await shot("11-ordinateur-carte");
+  await shot("14-ordinateur-carte");
 
   assert.deepEqual(errors, [], "aucune erreur JavaScript");
   console.log(`✔ Parcours complet réussi (${pseudo}). Captures : ${OUT}`);

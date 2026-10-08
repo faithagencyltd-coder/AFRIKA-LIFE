@@ -7,8 +7,9 @@ import { newPlayer, pool, rejects, tx } from "./helpers.mjs";
 after(() => pool.end());
 
 const PUBLIC_RPC = [
-  "apply_for_job", "building_is_open", "create_character", "game_minute", "game_state", "job_level", "job_pay",
-  "need_keys", "player_level", "quit_job", "real_duration", "start_activity", "start_work", "travel_quotes", "travel_to",
+  "apply_for_job", "building_is_open", "buy_home", "create_character", "game_minute", "game_state", "job_level", "job_pay",
+  "leave_home", "mark_notifications_read", "need_keys", "pay_home_arrears", "player_level", "quit_job", "real_duration",
+  "rent_home", "rent_period", "start_activity", "start_home_activity", "start_work", "travel_quotes", "travel_to",
 ];
 
 describe("Sécurité", () => {
@@ -24,6 +25,9 @@ describe("Sécurité", () => {
         "update jobs set base_pay = 1000000",
         "update game_config set starting_cash = 999999999",
         "insert into activities (code, name, duration_minutes) values ('triche', 'Triche', 5)",
+        "update character_homes set arrears = 0",
+        "update homes set rent_per_week = 1",
+        "delete from notifications",
       ]) {
         assert.match(await rejects(t.q(sql)), /permission denied/, sql);
       }
@@ -37,6 +41,8 @@ describe("Sécurité", () => {
       assert.match(await rejects(t.q("select public._apply_needs($1, '{\"hunger\": 100}')", [p.characterId])), /permission denied/);
       assert.match(await rejects(t.q("select public._complete_activity($1)", [p.characterId])), /permission denied/);
       assert.match(await rejects(t.q("select public._settle($1)", [p.characterId])), /permission denied/);
+      assert.match(await rejects(t.q("select public._settle_home($1)", [p.characterId])), /permission denied/);
+      assert.match(await rejects(t.q("select public._end_home($1, 'depart')", [p.characterId])), /permission denied/);
     });
   });
 
@@ -91,7 +97,8 @@ describe("Catalogue", () => {
       assert.equal(n, 10);
       const empty = await t.q(`select b.code from buildings b
         where not exists (select 1 from activities a where a.building_code = b.code)
-          and not exists (select 1 from jobs j where j.building_code = b.code)`);
+          and not exists (select 1 from jobs j where j.building_code = b.code)
+          and b.kind <> 'agence'`);
       assert.deepEqual(empty, []);
       const fill = await t.q(`select key, count(*)::int n from activities, jsonb_each(effects) e
         where (e.value #>> '{}')::numeric > 0 group by key order by key`);

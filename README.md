@@ -5,14 +5,16 @@ Lancement à **Cotonou** 🇧🇯, puis Lomé 🇹🇬 et Abidjan 🇨🇮.
 
 > Nom de code de développement. Le nom de marque sera choisi avant le lancement.
 
-## Ce qui est jouable aujourd'hui (MVP, étapes 1 à 7)
+## Ce qui est jouable aujourd'hui (étapes 1 à 7 et 9)
 
 - Compte : e-mail + mot de passe, Google (à activer dans Supabase).
 - Création du personnage : prénom, pseudo unique, sexe, âge, pays/ville, apparence complète avec avatar en direct.
-- Cotonou : 8 quartiers, 18 lieux, carte interactive, trajets à pied, en zémidjan, en taxi-ville ou en bus.
+- Cotonou : 8 quartiers, 19 lieux, carte interactive, trajets à pied, en zémidjan, en taxi-ville ou en bus.
 - 6 besoins (faim, énergie, hygiène, divertissement, social, besoin sanitaire) et 28 activités pour les satisfaire.
 - Horloge partagée : 1 minute réelle = 15 minutes de jeu ; actions qui durent ; lieux avec horaires.
 - 10 métiers, 5 niveaux par métier, salaire progressif ; il faut être en forme pour travailler.
+- Logement : 9 logements de la chambre au penthouse, location ou achat à l'agence, loyer prélevé chaque semaine
+  de jeu, arriérés, expulsion, activités à domicile selon le confort, notifications.
 - Économie serveur : 500 000 FCFA virtuels au départ, chaque franc est tracé.
 
 ## Documentation

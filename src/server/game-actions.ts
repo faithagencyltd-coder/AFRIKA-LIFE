@@ -46,9 +46,31 @@ export async function startWork(): Promise<ActionResult> {
   return call("start_work");
 }
 
-/** Redemande l'état au serveur (fin d'une action, retour sur l'onglet). */
-export async function syncState(): Promise<void> {
-  refresh();
+export async function rentHome(home: string): Promise<ActionResult> {
+  if (!code.safeParse(home).success) return { ok: false, error: "Logement inconnu." };
+  return call("rent_home", { p_home: home });
+}
+
+export async function buyHome(home: string): Promise<ActionResult> {
+  if (!code.safeParse(home).success) return { ok: false, error: "Logement inconnu." };
+  return call("buy_home", { p_home: home });
+}
+
+export async function leaveHome(): Promise<ActionResult> {
+  return call("leave_home");
+}
+
+export async function payHomeArrears(): Promise<ActionResult> {
+  return call("pay_home_arrears");
+}
+
+export async function doHomeActivity(activity: string): Promise<ActionResult> {
+  if (!code.safeParse(activity).success) return { ok: false, error: "Activité inconnue." };
+  return call("start_home_activity", { p_code: activity });
+}
+
+export async function markNotificationsRead(): Promise<ActionResult> {
+  return call("mark_notifications_read");
 }
 
 const characterInput = z.object({

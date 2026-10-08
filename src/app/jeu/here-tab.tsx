@@ -6,6 +6,7 @@ import { applyForJob, doActivity, startWork } from "@/server/game-actions";
 
 import { EffectChips } from "./effect-chips";
 import type { GameContext } from "./game-screen";
+import { HomeActivities, Stars } from "./home-tab";
 
 const BUILDING_ICON: Record<string, string> = {
   marche: "🛒",
@@ -23,6 +24,7 @@ const BUILDING_ICON: Record<string, string> = {
   chantier: "🏗️",
   transport: "🚕",
   livraison: "📦",
+  agence: "🔑",
 };
 
 export function HereTab({ ctx }: { ctx: GameContext }) {
@@ -37,6 +39,19 @@ export function HereTab({ ctx }: { ctx: GameContext }) {
         <h1 className="text-2xl font-black">{district?.name}</h1>
         <p className="text-sm text-brume">{district?.description}</p>
       </section>
+
+      {state.home && state.home.district_code === state.character.district_code && (
+        <section className="rounded-2xl bg-papyrus p-4 ring-2 ring-ocre/50">
+          <h2 className="font-bold">
+            🏠 Chez moi · <span className="font-normal">{state.home.name}</span>
+          </h2>
+          <p className="text-xs text-brume">
+            <Stars value={state.home.effective_comfort} dimmed={state.home.comfort - state.home.effective_comfort} />
+            {state.home.arrears > 0 && " · arriérés à régler (onglet Logement)"}
+          </p>
+          <HomeActivities ctx={ctx} />
+        </section>
+      )}
 
       {buildings.map((b) => (
         <BuildingCard key={b.code} building={b} ctx={ctx} />
@@ -78,6 +93,12 @@ function BuildingCard({ building: b, ctx }: { building: Building; ctx: GameConte
           {open ? fr.game.open : fr.game.closed} · {hours}
         </span>
       </div>
+
+      {b.kind === "agence" && (
+        <button onClick={() => ctx.goToTab("home")} className="mt-3 w-full rounded-xl bg-indigo py-2.5 text-sm font-bold text-white">
+          🔑 Voir les annonces ({catalog.homes.length} logements)
+        </button>
+      )}
 
       {activities.length > 0 && (
         <ul className="mt-2 divide-y divide-encre/5">

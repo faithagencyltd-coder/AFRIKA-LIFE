@@ -6,29 +6,32 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { Avatar } from "@/components/avatar";
 import { gameMinuteAt, splitGameMinute } from "@/game/clock";
 import { fcfa } from "@/game/format";
-import type { ActionResult, Catalog, GameState } from "@/game/types";
+import type { ActionResult, Catalog, GameNotification, GameState, LedgerEntry } from "@/game/types";
 import { fr } from "@/i18n/fr";
 
 import { BusyCard } from "./busy-card";
 import { HereTab } from "./here-tab";
+import { HomeTab } from "./home-tab";
 import { MapTab } from "./map-tab";
 import { MeTab } from "./me-tab";
 import { NeedsPanel } from "./needs-panel";
-import type { LedgerEntry } from "./page";
 import { WorkTab } from "./work-tab";
 
-type Tab = keyof typeof fr.game.tabs;
-const TAB_ICONS: Record<Tab, string> = { here: "📍", map: "🗺️", work: "💼", me: "🙂" };
+export type Tab = keyof typeof fr.game.tabs;
+const TAB_ICONS: Record<Tab, string> = { here: "📍", map: "🗺️", work: "💼", home: "🏠", me: "🙂" };
 
 export interface GameContext {
   state: GameState;
   catalog: Catalog;
   /** Minute de jeu courante (horloge vivante). */
   minute: number;
+  /** Instant serveur estimé (ms). */
+  now: number;
   busy: boolean;
   pending: boolean;
   run: (action: () => Promise<ActionResult>, success?: string) => void;
   goToMap: (district: string) => void;
+  goToTab: (tab: Tab) => void;
 }
 
 /** Instant serveur estimé, rafraîchi chaque seconde. */
@@ -42,7 +45,17 @@ function useServerNow(serverNowIso: string): number {
   return now;
 }
 
-export function GameScreen({ state, catalog, ledger }: { state: GameState; catalog: Catalog; ledger: LedgerEntry[] }) {
+export function GameScreen({
+  state,
+  catalog,
+  ledger,
+  notifications,
+}: {
+  state: GameState;
+  catalog: Catalog;
+  ledger: LedgerEntry[];
+  notifications: GameNotification[];
+}) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("here");
   const [mapFocus, setMapFocus] = useState<string | null>(null);
@@ -86,6 +99,7 @@ export function GameScreen({ state, catalog, ledger }: { state: GameState; catal
     state,
     catalog,
     minute,
+    now,
     busy: activity !== null,
     pending,
     run: (action, success) =>
@@ -97,6 +111,7 @@ export function GameScreen({ state, catalog, ledger }: { state: GameState; catal
       setMapFocus(code);
       setTab("map");
     },
+    goToTab: setTab,
   };
 
   return (
@@ -115,6 +130,18 @@ export function GameScreen({ state, catalog, ledger }: { state: GameState; catal
               Niveau {c.level} · {district?.name ?? c.district_code}
             </p>
           </div>
+          {state.unread_notifications > 0 && (
+            <button
+              onClick={() => setTab("me")}
+              className="relative rounded-full bg-papyrus p-2 ring-1 ring-encre/10"
+              aria-label={`${state.unread_notifications} notification(s) non lue(s)`}
+            >
+              <span aria-hidden>🔔</span>
+              <span className="absolute -top-1 -right-1 min-w-5 rounded-full bg-terre px-1 text-center text-[11px] font-bold leading-5 text-white">
+                {state.unread_notifications}
+              </span>
+            </button>
+          )}
           <div className="text-right">
             <p className="font-mono text-base font-bold tabular-nums" aria-label={`Jour ${time.day}, ${time.hhmm}`}>
               {time.period === "nuit" ? "🌙" : time.period === "soir" ? "🌆" : "☀️"} {time.hhmm}
@@ -134,7 +161,8 @@ export function GameScreen({ state, catalog, ledger }: { state: GameState; catal
         {tab === "here" && <HereTab ctx={ctx} />}
         {tab === "map" && <MapTab ctx={ctx} focus={mapFocus} onFocus={setMapFocus} />}
         {tab === "work" && <WorkTab ctx={ctx} />}
-        {tab === "me" && <MeTab ctx={ctx} ledger={ledger} />}
+        {tab === "home" && <HomeTab ctx={ctx} />}
+        {tab === "me" && <MeTab ctx={ctx} ledger={ledger} notifications={notifications} />}
       </main>
 
       {toast && (
@@ -147,7 +175,7 @@ export function GameScreen({ state, catalog, ledger }: { state: GameState; catal
       )}
 
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-encre/10 bg-papyrus/95 backdrop-blur" aria-label="Navigation du jeu">
-        <div className="mx-auto grid max-w-2xl grid-cols-4">
+        <div className="mx-auto grid max-w-2xl grid-cols-5">
           {(Object.keys(fr.game.tabs) as Tab[]).map((t) => (
             <button
               key={t}

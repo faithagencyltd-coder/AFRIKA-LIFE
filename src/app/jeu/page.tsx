@@ -1,20 +1,24 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import type { Activity, Building, Catalog, District, GameState, Job, TransportMode, TravelQuote } from "@/game/types";
+import type {
+  Activity,
+  Building,
+  Catalog,
+  District,
+  GameNotification,
+  GameState,
+  Home,
+  HomeActivity,
+  Job,
+  LedgerEntry,
+  TransportMode,
+  TravelQuote,
+} from "@/game/types";
 
 import { GameScreen } from "./game-screen";
 
 export const metadata = { title: "En jeu" };
-
-export interface LedgerEntry {
-  id: number;
-  amount: number;
-  balance_after: number;
-  kind: string;
-  ref: string | null;
-  created_at: string;
-}
 
 export default async function JeuPage() {
   const supabase = await createClient();
@@ -29,7 +33,7 @@ export default async function JeuPage() {
   const districts = ((districtsRes.data ?? []) as District[]).map((d) => ({ ...d, x_km: Number(d.x_km), y_km: Number(d.y_km) }));
   const districtCodes = districts.map((d) => d.code);
 
-  const [buildings, activities, jobs, modes, quotes, ledger] = await Promise.all([
+  const [buildings, activities, jobs, modes, quotes, ledger, homes, homeActivities, notifications] = await Promise.all([
     supabase.from("buildings").select("code, district_code, name, kind, description, open_hour, close_hour, sort").in("district_code", districtCodes).order("sort"),
     supabase.from("activities").select("code, building_code, name, description, duration_minutes, price, effects, xp, sort").eq("is_active", true).order("sort"),
     supabase
@@ -40,6 +44,14 @@ export default async function JeuPage() {
     supabase.from("transport_modes").select("code, name, icon").order("sort"),
     supabase.rpc("travel_quotes", { p_from: c.district_code }),
     supabase.from("transactions").select("id, amount, balance_after, kind, ref, created_at").order("id", { ascending: false }).limit(8),
+    supabase
+      .from("homes")
+      .select("code, district_code, name, category, description, comfort, capacity, required_level, rent_per_week, price, upkeep_per_week")
+      .eq("is_active", true)
+      .in("district_code", districtCodes)
+      .order("sort"),
+    supabase.from("home_activities").select("code, name, description, min_comfort, duration_minutes, price, effects, xp").order("sort"),
+    supabase.from("notifications").select("id, kind, message, created_at, read_at").order("id", { ascending: false }).limit(15),
   ]);
 
   const buildingCodes = new Set(((buildings.data ?? []) as Building[]).map((b) => b.code));
@@ -52,8 +64,15 @@ export default async function JeuPage() {
     jobs: ((jobs.data ?? []) as Job[]).filter((j) => buildingCodes.has(j.building_code)).map((j) => ({ ...j, base_pay: Number(j.base_pay) })),
     modes: (modes.data ?? []) as TransportMode[],
     quotes: ((quotes.data ?? []) as TravelQuote[]).map((q) => ({ ...q, km: Number(q.km), fare: Number(q.fare) })),
+    homes: ((homes.data ?? []) as Home[]).map((h) => ({
+      ...h,
+      rent_per_week: Number(h.rent_per_week),
+      price: h.price === null ? null : Number(h.price),
+      upkeep_per_week: Number(h.upkeep_per_week),
+    })),
+    homeActivities: ((homeActivities.data ?? []) as HomeActivity[]).map((a) => ({ ...a, price: Number(a.price) })),
   };
   const entries = ((ledger.data ?? []) as LedgerEntry[]).map((e) => ({ ...e, amount: Number(e.amount), balance_after: Number(e.balance_after) }));
 
-  return <GameScreen state={state} catalog={catalog} ledger={entries} />;
+  return <GameScreen state={state} catalog={catalog} ledger={entries} notifications={(notifications.data ?? []) as GameNotification[]} />;
 }

@@ -68,7 +68,8 @@ qu'afficher et appeler ces fonctions.
  │  Journal d'argent / actions   │ écriture     │
  │  Fonctions rpc : create_character,           │
  │  game_state, start_activity, travel_to,      │
- │  apply_for_job, quit_job, start_work         │
+ │  apply_for_job, quit_job, start_work,        │
+ │  rent_home, buy_home, leave_home, …          │
  └──────────────────────────────────────────────┘
 ```
 
@@ -92,7 +93,9 @@ en **FCFA entiers (`bigint`)**, horodatages `timestamptz`.
 | `activities` | Ce qu'on peut faire dans un lieu | `code`, `building_code` (null = partout), `name`, `duration_minutes`, `price`, `effects` (jsonb des besoins), `xp` |
 | `transport_modes` | Marche, zémidjan, taxi, bus (§15) | `base_fare`, `fare_per_km`, `minutes_per_km` |
 | `jobs` | Métiers (§10) | `code`, `building_code`, `tier`, `base_pay`, `shift_minutes`, `shift_start_hour`, `shift_end_hour`, `required_level`, `xp_per_shift`, `effects` |
-| `appearance_options` | Options de personnalisation autorisées (§6) | `category`, `code`, `gender` |
+| `appearance_options` | Options de personnalisation autorisées (§6) | `category`, `code` |
+| `homes` | Logements à louer / acheter (§12) | `code`, `district_code`, `category`, `comfort` 1-5, `required_level`, `rent_per_week`, `price`, `upkeep_per_week` |
+| `home_activities` | Ce qu'on fait chez soi | `code`, `min_comfort`, `duration_minutes`, `price`, `effects` |
 
 ### 4.2 Données des joueurs (lecture : le propriétaire ; écriture : fonctions uniquement)
 
@@ -102,10 +105,12 @@ en **FCFA entiers (`bigint`)**, horodatages `timestamptz`.
 | `character_jobs` | Carrière : métier, niveau 1-5, XP, services effectués, actif ou non (§11). |
 | `transactions` | Grand livre de l'argent virtuel (P4). |
 | `activity_log` | Historique de toutes les actions terminées (analytics §40, anti-triche §44). |
+| `character_homes` | Logement occupé (un actif en V1) : location ou propriété, montant périodique figé, caution, prochaine échéance, arriérés, impayés. |
+| `notifications` | Messages au joueur (§36) : loyer prélevé, impayé, expulsion, nouveau logement. |
 
 ### 4.3 Tables prévues aux étapes suivantes (non créées en V1)
 
-`homes` / `character_homes` (étape 9) · `items` / `inventory` / `shops` (étape 10) ·
+`items` / `inventory` / `shops` (étape 10) ·
 `presence` (étape 11, Realtime) · `messages` / `blocks` / `reports` (étape 12) ·
 `missions` / `character_missions` (étape 13) · `products` / `payments` /
 `subscriptions` (étape 14) · `admins` / `audit_log` (étape 15) ·
@@ -179,11 +184,12 @@ Besoin sanitaire ≥ 10. Le travail lui-même coûte de l'énergie et de l'hygi�
 ### 6.3 Argent (§9, §26)
 
 * Capital de départ : **500 000 FCFA virtuels** (`starting_cash`).
-* Sources V1 : salaires. Sorties V1 : repas, transport, auberge, douche,
-  toilettes, loisirs, crédit téléphone.
+* Sources V1 : salaires, revente de logement. Sorties V1 : repas, transport,
+  auberge, douche, toilettes, loisirs, crédit téléphone, **loyer / charges**,
+  achat de logement.
 * Ordre de grandeur d'une journée de jeu pour un débutant : 3-4 services
   (≈ 12 000 à 18 000 FCFA) contre ≈ 10 000 FCFA de dépenses de base. Le
-  joueur progresse lentement mais sûrement ; le logement (étape 9) sera le
+  joueur progresse lentement mais sûrement ; le logement (§6.6) est le
   premier gros puits d'argent.
 
 ### 6.4 Métiers et carrière (§10, §11)
@@ -209,6 +215,35 @@ Besoin sanitaire ≥ 10. Le travail lui-même coûte de l'énergie et de l'hygi�
   (confort), bus (moins cher, plus lent).
 
 ---
+
+### 6.6 Logement (§12, §13)
+
+* Une **semaine de jeu** (`rent_period_game_days = 7`) dure **11 h 12 réelles**.
+* Les contrats se signent à l'**agence immobilière** (Ganhi, 8 h-18 h). Location :
+  1re semaine + caution d'une semaine. Achat : prix comptant, puis des charges
+  hebdomadaires. Déménager rend d'abord l'ancien logement.
+* À chaque échéance, le loyer (ou les charges) est **prélevé automatiquement**,
+  même pendant une absence. Si le solde est insuffisant : arriéré + **10 %** de
+  pénalité, notification, **confort −1 étoile** tant que les arriérés ne sont pas
+  réglés. Au **3e impayé**, le locataire est **expulsé** et perd sa caution. Un
+  propriétaire n'est jamais expulsé.
+* Quitter : caution rendue (arriérés déduits ; refus si elle ne les couvre pas) ;
+  un logement acheté est revendu à **80 %** du prix.
+* Le confort (1 à 5 étoiles) débloque les activités à domicile : dormir, toilettes
+  et seau (1), douche et cuisine (2), télévision (3), piscine et recevoir des
+  amis (4). Dormir chez soi est gratuit, contre 5 000 FCFA à l'auberge.
+
+| Logement | Quartier | Confort | Loyer / semaine | Prix | Niveau |
+|----------|----------|:------:|----------------:|-----:|:-----:|
+| Chambre « entrer-coucher » | Akpakpa | ★ | 12 000 | — | 1 |
+| Chambre | Agla | ★ | 15 000 | — | 1 |
+| Studio | Gbégamey | ★★ | 35 000 | 6 000 000 | 1 |
+| Studio meublé | Cadjèhoun | ★★ | 40 000 | 7 500 000 | 2 |
+| Appartement 2 chambres | Cadjèhoun | ★★★ | 90 000 | 18 000 000 | 3 |
+| Appartement vue mer | Fidjrossè | ★★★ | 110 000 | 22 000 000 | 3 |
+| Villa avec piscine | Haie Vive | ★★★★ | 300 000 | 75 000 000 | 5 |
+| Maison de luxe | Haie Vive | ★★★★★ | 700 000 | 180 000 000 | 7 |
+| Penthouse | Ganhi | ★★★★★ | 1 000 000 | 300 000 000 | 8 |
 
 ## 7. Cycle d'une action (exemple : « Manger un plat au maquis »)
 
@@ -288,3 +323,6 @@ wa-life/
 | 2026-10-08 | D-04 Carte et avatar en SVG pour la V1 ; Phaser à l'étape 11. |
 | 2026-10-08 | D-05 Un personnage par compte en V1. |
 | 2026-10-08 | D-06 Lancement : Cotonou uniquement ouvert ; Lomé (V1.5) puis Abidjan (V2) déjà présents dans le catalogue, fermés. |
+| 2026-10-09 | D-07 Loyer prélevé automatiquement, y compris pendant les absences (contrairement aux besoins) : c'est le principal puits d'argent. |
+| 2026-10-09 | D-08 Expulsion au 3e impayé (locataire uniquement) ; arriérés = loyer + 10 %. |
+| 2026-10-09 | D-09 Un seul logement occupé en V1 ; la possession de plusieurs biens viendra avec l'immobilier (V2). |

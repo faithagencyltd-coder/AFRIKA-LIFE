@@ -14,7 +14,7 @@ quand son code, ses tests et sa documentation sont fusionnés et que
 | 6 | Temps | ✅ Fait | Horloge partagée (1 min réelle = 15 min de jeu), horaires des lieux, actions qui durent |
 | 7 | Métiers | ✅ Fait | 10 métiers débutants, 5 niveaux, salaire progressif, conditions physiques pour travailler |
 | 8 | Économie | 🟡 Base posée | Grand livre `transactions` ; à faire : taxes virtuelles, tableau de bord des flux |
-| 9 | Logement | ⏳ | Chambre → studio → appartement… loyer hebdomadaire, pénalités, expulsion |
+| 9 | Logement | ✅ Fait | 9 logements (chambre → penthouse), location et achat à l'agence, loyer prélevé chaque semaine de jeu, arriérés + 10 %, perte de confort, expulsion au 3e impayé, revente à 80 %, 9 activités à domicile, notifications |
 | 10 | Inventaire | ⏳ | Objets, nourriture achetée, vêtements |
 | 11 | Multijoueur | ⏳ | Présence par lieu (Supabase Realtime), scène Phaser |
 | 12 | Chat | ⏳ | Privé, groupe, public par lieu ; signalement, blocage, filtre |
@@ -26,6 +26,7 @@ quand son code, ses tests et sa documentation sont fusionnés et que
 
 ## Prochaine étape proposée
 
-**Étape 9 — Logement** : c'est le premier grand puits d'argent et le
-prochain objectif naturel du joueur (« Achète / loue ton premier
-logement »). Il remplacera l'auberge comme lieu de sommeil et de douche.
+**Étape 10 — Inventaire et mobilier** (§14, §18, §19) : acheter de la
+nourriture au marché pour cuisiner chez soi, des vêtements qui changent
+l'avatar, et des meubles (lit, climatiseur, télévision…) qui augmentent le
+confort du logement.

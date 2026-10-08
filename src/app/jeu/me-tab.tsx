@@ -1,10 +1,15 @@
+"use client";
+
+import { useEffect } from "react";
+
 import { Avatar } from "@/components/avatar";
 import { fcfa } from "@/game/format";
 import { fr } from "@/i18n/fr";
+import type { GameNotification, LedgerEntry } from "@/game/types";
 import { signOut } from "@/server/auth-actions";
+import { markNotificationsRead } from "@/server/game-actions";
 
 import type { GameContext } from "./game-screen";
-import type { LedgerEntry } from "./page";
 
 const KIND: Record<string, string> = {
   starting_cash: "Capital de départ",
@@ -13,10 +18,24 @@ const KIND: Record<string, string> = {
   salary: "Salaire",
   mission: "Mission",
   admin: "Ajustement",
+  rent: "Loyer",
+  upkeep: "Charges du logement",
+  deposit: "Caution",
+  deposit_refund: "Caution remboursée",
+  arrears: "Arriérés réglés",
+  home_purchase: "Achat de logement",
+  home_sale: "Vente de logement",
 };
 
-export function MeTab({ ctx, ledger }: { ctx: GameContext; ledger: LedgerEntry[] }) {
+const NOTE_ICON: Record<string, string> = { rent_paid: "🧾", rent_missed: "⚠️", eviction: "🚪", home: "🏠" };
+
+export function MeTab({ ctx, ledger, notifications }: { ctx: GameContext; ledger: LedgerEntry[]; notifications: GameNotification[] }) {
   const c = ctx.state.character;
+  const unread = ctx.state.unread_notifications;
+  // Ouvrir l'onglet vaut lecture des notifications.
+  useEffect(() => {
+    if (unread > 0) void markNotificationsRead();
+  }, [unread]);
   const prevLevelXp = (100 * c.level * (c.level - 1)) / 2;
   const progress = Math.min(100, ((c.xp - prevLevelXp) / Math.max(1, c.next_level_xp - prevLevelXp)) * 100);
   return (
@@ -37,6 +56,20 @@ export function MeTab({ ctx, ledger }: { ctx: GameContext; ledger: LedgerEntry[]
           </p>
         </div>
       </section>
+
+      {notifications.length > 0 && (
+        <section className="rounded-2xl bg-papyrus p-4 ring-1 ring-encre/5">
+          <h2 className="font-bold">Notifications</h2>
+          <ul className="mt-2 space-y-2 text-sm">
+            {notifications.map((n) => (
+              <li key={n.id} className={`flex gap-2 rounded-xl px-3 py-2 ${n.read_at ? "bg-sable/60" : "bg-ocre/15 font-medium"}`}>
+                <span aria-hidden>{NOTE_ICON[n.kind] ?? "🔔"}</span>
+                <span>{n.message}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="rounded-2xl bg-papyrus p-4 ring-1 ring-encre/5">
         <h2 className="font-bold">Derniers mouvements</h2>

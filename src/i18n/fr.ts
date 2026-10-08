@@ -15,11 +15,19 @@ export const fr = {
     checkEmail: "Compte créé : ouvrez le lien reçu par e-mail pour l'activer, puis connectez-vous.",
   },
   game: {
-    tabs: { here: "Ici", map: "Carte", work: "Travail", me: "Moi" },
+    tabs: { here: "Ici", map: "Carte", work: "Travail", home: "Logement", me: "Moi" },
     busy: "En cours",
     closed: "Fermé",
     open: "Ouvert",
     free: "Gratuit",
     youAreHere: "Vous êtes ici",
+    homeCategories: {
+      chambre: "Chambre",
+      studio: "Studio",
+      appartement: "Appartement",
+      villa: "Villa",
+      maison_luxe: "Maison de luxe",
+      penthouse: "Penthouse",
+    },
   },
 } as const;

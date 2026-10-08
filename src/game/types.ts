@@ -64,11 +64,32 @@ export interface JobState {
   effects: Effects;
 }
 
+export interface HomeState {
+  code: string;
+  name: string;
+  category: HomeCategory;
+  district_code: string;
+  comfort: number;
+  /** Confort réduit de 1 tant qu'il reste des arriérés. */
+  effective_comfort: number;
+  tenure: "rental" | "owned";
+  periodic_charge: number;
+  deposit: number;
+  purchase_price: number | null;
+  resale_value: number | null;
+  next_due_at: string;
+  arrears: number;
+  missed: number;
+  max_missed: number;
+}
+
 export interface GameState {
   clock: Clock;
   character: CharacterState;
   job: JobState | null;
   careers: { code: string; level: number; xp: number; shifts: number; is_active: boolean }[];
+  home: HomeState | null;
+  unread_notifications: number;
 }
 
 // Catalogue (tables publiques).
@@ -141,6 +162,47 @@ export interface Country {
   is_open: boolean;
 }
 
+export type HomeCategory = "chambre" | "studio" | "appartement" | "villa" | "maison_luxe" | "penthouse";
+
+export interface Home {
+  code: string;
+  district_code: string;
+  name: string;
+  category: HomeCategory;
+  description: string;
+  comfort: number;
+  capacity: number;
+  required_level: number;
+  rent_per_week: number;
+  price: number | null;
+  upkeep_per_week: number;
+}
+export interface HomeActivity {
+  code: string;
+  name: string;
+  description: string;
+  min_comfort: number;
+  duration_minutes: number;
+  price: number;
+  effects: Effects;
+  xp: number;
+}
+export interface GameNotification {
+  id: number;
+  kind: string;
+  message: string;
+  created_at: string;
+  read_at: string | null;
+}
+export interface LedgerEntry {
+  id: number;
+  amount: number;
+  balance_after: number;
+  kind: string;
+  ref: string | null;
+  created_at: string;
+}
+
 export interface Catalog {
   districts: District[];
   buildings: Building[];
@@ -148,6 +210,8 @@ export interface Catalog {
   jobs: Job[];
   modes: TransportMode[];
   quotes: TravelQuote[];
+  homes: Home[];
+  homeActivities: HomeActivity[];
 }
 
 /** Résultat d'une Server Action. */
